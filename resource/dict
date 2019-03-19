@@ -1,0 +1,32 @@
+short_name  string  是   公司简称
+full_name   string  是   公司全称
+company_link    string  否   公司网址
+company_logo    string  否   公司图片
+company_word    string  否   公司口号
+company_type    string  否   公司行业
+company_process string  否   公司发展
+company_number  string  否   公司人数
+company_address string  否   公司地址
+company_detail  string  否   公司介绍
+company_products    array   否   公司产品
+  product_name  string  是   产品名
+  product_info  string  否   产品介绍
+  product_link  string  否   产品链接
+company_managers    array   否   公司管理团队
+  manager_name  string  是   名字
+  manager_title string  否   职位
+  manager_info  string  否   介绍
+company_jobs    array   否   公司招聘职位
+  job_name  string  否   职位名
+  job_salary    string  否   薪资
+  job_published_date    string  否   发布日期
+  job_type  string  否   性质
+  job_education string  否   要求学历
+  job_experience    string  否   要求工作经验
+company_history     array   否   发展历程
+  history_date  string  否   时间
+  history_content   string  否   内容
+  history_content_url   string  否   内容链接
+resume_process_rate string  否   简历及时处理率
+interview_com_num   string  否   面试评价个数（个）
+score   string  否   综合评分（总分5.0分）
