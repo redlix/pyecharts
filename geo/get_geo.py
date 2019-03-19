@@ -8,23 +8,63 @@
 @Software: PyCharm
 """
 from pyecharts import Geo
+from utils import sql_util as sql
+import json
 
 
 def get_geo(data, title, second_title, file_path):
-    attr, value = Geo.cast(data)
+	attr, value = Geo.cast(data)
 
-    geo = Geo(title, second_title, title_color="#fff", title_pos="center", width=1200, height=600,
-              background_color='#404a59')
+	geo = Geo(title, second_title, title_color="#fff", title_pos="center", width=1200, height=600,
+			  background_color='#404a59')
 
-    geo.add("空气质量热力图", attr, value, visual_range=[0, 25], type='heatmap', visual_text_color="#fff", symbol_size=15,
-            is_visualmap=True, is_roam=False)
-    geo.show_config()
-    geo.render(file_path)
+	geo.add("", attr, value, type="effectScatter", is_random=False, effect_scale=5)
+	geo.show_config()
+	geo.render(file_path)
+
+
+# data =[("海门", 9), ("鄂尔多斯", 12), ("招远", 12), ("舟山", 12), ("齐齐哈尔", 14), ("盐城", 15)]
+# geo =Geo("全国主要城市空气质量", "data from pm2.5", title_color="#fff", title_pos="center", width=1200, height=600, background_color='#404a59')
+# attr, value =geo.cast(data)
+# geo.add("", attr, value, type="effectScatter", is_random=True, effect_scale=5)
+# geo.show_config()
+# geo.render()
+
+
+def get_all_data(profession):
+	sql_str = "select * from lagoudata where company_jobs <> '[]'"
+	res = sql.queryall(sql_str)
+	address = []
+	for element in res:
+		for item in json.loads(element.get('company_jobs'), encoding='utf-8'):
+			if item.get('job_name').find(profession) >= 0:
+				if element.get('company_address')[0:2] not in address:
+					address.append(element.get('company_address')[0:2])
+	num = [0 for _ in range(len(address))]
+	for element in res:
+		for item in json.loads(element.get('company_jobs'), encoding='utf-8'):
+			if item.get('job_name').find(profession) >= 0:
+				num[address.index(element.get('company_address')[0:2])] += 1
+	return num, address
+
+
+def integration_data(process):
+	num, address = get_all_data(process)
+	data = []
+	for i in range(len(address)):
+		data.append((address[i], num[i]))
+	return data
 
 
 if __name__ == '__main__':
-    data = [
-        ("海门", 9), ("鄂尔多斯", 12), ("招远", 12), ("舟山", 12), ("齐齐哈尔", 14), ("盐城", 15),
-        ("赤峰", 16), ("青岛", 18), ("乳山", 18), ("金昌", 19), ("泉州", 21), ("莱西", 21),
-        ("日照", 21), ("胶南", 22), ("南通", 23), ("拉萨", 24), ("云浮", 24), ("梅州", 25)]
-    get_geo(data, 'test', 'test', '../result/map.html')
+	process = '数据挖掘'
+	data = integration_data(process)
+	get_geo(data, '专业分布图', process, '../result/' + process + 'map.html')
+
+	process = 'java'
+	data = integration_data(process)
+	get_geo(data, '专业分布图', process, '../result/' + process + 'map.html')
+
+	process = '前端'
+	data = integration_data(process)
+	get_geo(data, '专业分布图', process, '../result/' + process + 'map.html')
